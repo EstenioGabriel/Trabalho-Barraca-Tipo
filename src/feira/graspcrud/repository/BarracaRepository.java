@@ -9,4 +9,6 @@ public interface BarracaRepository {
     Barraca buscarPorId(int id);
     void atualizar(Barraca barraca);
     void remover(int id);
+    boolean existeNome(String nome, Integer ignorarId);
+    boolean existePorTipo(int tipoId);
 }

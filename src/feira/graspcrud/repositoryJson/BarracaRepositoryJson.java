@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BarracaRepositoryJson implements BarracaRepository {
+
     private final String CAMINHO = "data/barracas.json";
     private List<Barraca> cache = new ArrayList<>();
 
@@ -19,13 +20,12 @@ public class BarracaRepositoryJson implements BarracaRepository {
         for (String json : objetosRaw) {
             try {
                 if (json.trim().isEmpty() || !json.contains("{")) continue;
-                
                 int id = Integer.parseInt(extrairValor(json, "id"));
                 String nome = extrairValor(json, "nome");
+                String descricao = extrairValor(json, "descricao");
                 int tipoId = Integer.parseInt(extrairValor(json, "tipoId"));
                 boolean ativo = extrairValor(json, "ativo").equalsIgnoreCase("true");
-                
-                cache.add(new Barraca(id, nome, tipoId, ativo));
+                cache.add(new Barraca(id, nome, descricao, ativo, tipoId));
             } catch (Exception e) {
                 continue;
             }
@@ -34,18 +34,14 @@ public class BarracaRepositoryJson implements BarracaRepository {
 
     @Override
     public void salvar(Barraca barraca) {
-        Barraca existente = buscarPorId(barraca.getId());
-        if (existente != null) {
-            cache.remove(existente);
-        }
-        
+        cache.removeIf(b -> b.getId() == barraca.getId());
         cache.add(barraca);
         salvarNoArquivo();
     }
 
     @Override
     public List<Barraca> listarTodas() {
-        return new ArrayList<>(cache); 
+        return new ArrayList<>(cache);
     }
 
     @Override
@@ -58,7 +54,9 @@ public class BarracaRepositoryJson implements BarracaRepository {
 
     @Override
     public void atualizar(Barraca barraca) {
-        this.salvar(barraca);
+        cache.removeIf(b -> b.getId() == barraca.getId());
+        cache.add(barraca);
+        salvarNoArquivo();
     }
 
     @Override
@@ -67,12 +65,30 @@ public class BarracaRepositoryJson implements BarracaRepository {
         salvarNoArquivo();
     }
 
+    @Override
+    public boolean existeNome(String nome, Integer ignorarId) {
+        for (Barraca b : cache) {
+            if (b.getNome().equalsIgnoreCase(nome)) {
+                if (ignorarId == null || b.getId() != ignorarId) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existePorTipo(int tipoId) {
+        for (Barraca b : cache) {
+            if (b.getTipoId() == tipoId) return true;
+        }
+        return false;
+    }
+
     private void salvarNoArquivo() {
         List<String> linhas = new ArrayList<>();
         for (Barraca b : cache) {
             linhas.add(String.format(
-                "{\"id\": %d, \"nome\": \"%s\", \"tipoId\": %d, \"ativo\": %b}",
-                b.getId(), b.getNome(), b.getTipoId(), b.isAtivo()
+                "{\"id\": %d, \"nome\": \"%s\", \"descricao\": \"%s\", \"tipoId\": %d, \"ativo\": %b}",
+                b.getId(), b.getNome(), b.getDescricao(), b.getTipoId(), b.isAtivo()
             ));
         }
         JsonMini.salvar(CAMINHO, linhas);
@@ -82,13 +98,10 @@ public class BarracaRepositoryJson implements BarracaRepository {
         String alvo = "\"" + chave + "\":";
         int inicio = json.indexOf(alvo);
         if (inicio == -1) return "";
-        
         inicio += alvo.length();
         int fim = json.indexOf(",", inicio);
         if (fim == -1) fim = json.indexOf("}", inicio);
-        
         if (fim == -1) return "";
-        
         return json.substring(inicio, fim).replace("\"", "").trim();
     }
 }
