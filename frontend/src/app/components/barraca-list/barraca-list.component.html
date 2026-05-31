@@ -1,0 +1,37 @@
+<div class="container">
+  <h2>Lista de Barracas</h2>
+
+  <div *ngIf="mensagemSucesso" class="alert alert-success">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div *ngIf="mensagemErro" class="alert alert-error">
+    {{ mensagemErro }}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Localização</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let barraca of barracas">
+        <td>{{ barraca.id }}</td>
+        <td>{{ barraca.nome }}</td>
+        <td>{{ barraca.localizacao || '-' }}</td>
+        <td>{{ barraca.tipoBarracaNome }}</td>
+        <td>
+          <button (click)="deletar(barraca.id)" class="btn-delete">Excluir</button>
+        </td>
+      </tr>
+      <tr *ngIf="barracas.length === 0">
+        <td colspan="5" class="text-center">Nenhuma barraca encontrada.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
