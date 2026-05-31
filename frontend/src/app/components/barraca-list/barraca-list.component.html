@@ -1,13 +1,11 @@
 <div class="container">
-  <h2>Lista de Barracas</h2>
-
-  <div *ngIf="mensagemSucesso" class="alert alert-success">
-    {{ mensagemSucesso }}
+  <div class="header">
+    <h2>Barracas Cadastradas</h2>
+    <a routerLink="/barracas/nova" class="btn-nova">+ Nova Barraca</a>
   </div>
 
-  <div *ngIf="mensagemErro" class="alert alert-error">
-    {{ mensagemErro }}
-  </div>
+  <div *ngIf="mensagemSucesso" class="alert alert-success">{{ mensagemSucesso }}</div>
+  <div *ngIf="mensagemErro" class="alert alert-error">{{ mensagemErro }}</div>
 
   <table>
     <thead>
@@ -16,6 +14,7 @@
         <th>Nome</th>
         <th>Localização</th>
         <th>Tipo</th>
+        <th>Ativa</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -25,12 +24,14 @@
         <td>{{ barraca.nome }}</td>
         <td>{{ barraca.localizacao || '-' }}</td>
         <td>{{ barraca.tipoBarracaNome }}</td>
-        <td>
+        <td>{{ barraca.ativo ? 'Sim' : 'Não' }}</td>
+        <td class="acoes">
+          <a [routerLink]="['/barracas/editar', barraca.id]" class="btn-edit">Editar</a>
           <button (click)="deletar(barraca.id)" class="btn-delete">Excluir</button>
         </td>
       </tr>
       <tr *ngIf="barracas.length === 0">
-        <td colspan="5" class="text-center">Nenhuma barraca encontrada.</td>
+        <td colspan="6" class="text-center">Nenhuma barraca cadastrada.</td>
       </tr>
     </tbody>
   </table>

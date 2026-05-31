@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { BarracaService } from '../../services/barraca.service';
 import { BarracaResponseDTO } from '../../models/barraca-response.model';
 
 @Component({
   selector: 'app-barraca-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './barraca-list.component.html',
   styleUrl: './barraca-list.component.css'
 })

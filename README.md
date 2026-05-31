@@ -1,106 +1,115 @@
-# CRUD com Padrões GRASP — Barraca e TipoBarraca
+# Barraca Tipo — Sistema Web
 
-Sistema de gestão de feira livre implementado em Java puro com menu textual no terminal e persistência em arquivo JSON local.
+Migração do projeto console para uma aplicação web com **Spring Boot** no backend e **Angular** no frontend.
 
-## Integrantes do Grupo A
+## Integrantes
 
-- Estenio Gabriel 
+- Estenio Gabriel
 - Gabriel Brandão
+- Guilherme
 
-## Como Compilar e Executar
+---
 
-> **Requisito:** JDK 8 ou superior instalado.
+## Pré-requisitos
 
-### Windows (PowerShell)
+| Ferramenta | Versão mínima |
+|---|---|
+| Java JDK | 17 |
+| Maven | 3.9+ (ou usar o `mvnw` incluso) |
+| Node.js | 18 LTS |
+| Angular CLI | 17+ (`npm install -g @angular/cli`) |
 
-```powershell
-# 1. Criar pasta de saída
-New-Item -ItemType Directory -Force -Path out
+---
 
-# 2. Listar todos os .java e compilar
-$arquivos = Get-ChildItem -Recurse -Filter *.java src | Select-Object -ExpandProperty FullName
-javac -d out $arquivos
-
-# 3. Executar
-java -cp out feira.graspcrud.Main
-```
-
-### Linux / Mac
+## Rodando o Backend (Spring Boot)
 
 ```bash
-find src -name "*.java" > sources.txt
-javac -d out @sources.txt
-java -cp out feira.graspcrud.Main
+cd backend
+./mvnw spring-boot:run
 ```
+
+O servidor sobe em **http://localhost:8080**.
+
+Console H2 disponível em **http://localhost:8080/h2-console**
+- JDBC URL: `jdbc:h2:mem:barracadb`
+- Usuário: `sa` / Senha: *(vazio)*
+
+---
+
+## Rodando o Frontend (Angular)
+
+```bash
+cd frontend
+npm install
+ng serve
+```
+
+A aplicação abre em **http://localhost:4200**.
+
+---
+
+## Principais Endpoints da API
+
+### Tipos de Barraca
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/tipos-barraca` | Lista todos os tipos |
+| GET | `/api/tipos-barraca/{id}` | Busca por ID |
+| POST | `/api/tipos-barraca` | Cadastra novo tipo |
+| DELETE | `/api/tipos-barraca/{id}` | Remove um tipo |
+
+### Barracas
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/barracas` | Lista todas as barracas |
+| GET | `/api/barracas/{id}` | Busca por ID |
+| POST | `/api/barracas` | Cadastra nova barraca |
+| PUT | `/api/barracas/{id}` | Atualiza uma barraca |
+| DELETE | `/api/barracas/{id}` | Remove uma barraca |
+
+---
 
 ## Estrutura do Projeto
 
 ```
 Barraca-Tipo/
-├── src/
-│   └── feira/graspcrud/
-│       ├── Main.java
-│       ├── controller/
-│       │   └── BarracaController.java
-│       ├── domain/
-│       │   ├── Barraca.java
-│       │   └── TipoBarraca.java
-│       ├── dto/
-│       │   ├── BarracaRequest.java
-│       │   └── TipoBarracaRequest.java
-│       ├── exception/
-│       │   └── RegraNegocioException.java
-│       ├── repository/
-│       │   ├── BarracaRepository.java
-│       │   └── TipoBarracaRepository.java
-│       ├── repositoryJson/
-│       │   ├── BarracaRepositoryJson.java
-│       │   └── TipoBarracaRepositoryJson.java
-│       └── util/
-│           └── JsonMini.java
-└── data/
-    ├── barracas.json
-    └── tipos-barraca.json
+├── backend/                        # API REST — Spring Boot
+│   └── src/main/java/com/barraca/backend/
+│       ├── config/                 # CorsConfig
+│       ├── controller/             # TipoBarracaController, BarracaController
+│       ├── domain/                 # Entidades JPA (TipoBarraca, Barraca)
+│       ├── dto/                    # DTOs de entrada e saída
+│       ├── exception/              # RegraNegocioException, GlobalExceptionHandler
+│       ├── repository/             # Interfaces JpaRepository
+│       └── service/                # Regras de negócio
+└── frontend/                       # SPA — Angular
+    └── src/app/
+        ├── components/
+        │   ├── barraca-list/       # Tela de listagem
+        │   └── barraca-form/       # Tela de cadastro/edição
+        ├── models/                 # Interfaces TypeScript
+        └── services/               # Chamadas HTTP à API
 ```
 
-## Funcionalidades do Menu
+---
 
+## Respostas de Erro da API
+
+**HTTP 400 — Dados inválidos (Bean Validation):**
+```json
+{
+  "status": 400,
+  "mensagem": "Dados inválidos",
+  "erros": ["O nome é obrigatório", "O tipo de barraca é obrigatório"]
+}
 ```
-1. Cadastrar TipoBarraca
-2. Listar TipoBarraca
-3. Cadastrar Barraca
-4. Listar Barraca
-5. Buscar Barraca por id
-6. Atualizar Barraca
-7. Excluir Barraca
-8. Excluir TipoBarraca
-9. Sair
+
+**HTTP 422 — Regra de negócio violada:**
+```json
+{
+  "status": 422,
+  "mensagem": "Já existe uma Barraca com o nome: Barraca Central"
+}
 ```
-
-## Regras de Negócio Implementadas
-
-- Nome de TipoBarraca deve ter ao menos 3 caracteres.
-- Não é permitido cadastrar dois TipoBarraca com o mesmo nome.
-- Não é permitido remover um TipoBarraca que esteja vinculado a alguma Barraca.
-- Nome de Barraca deve ter ao menos 3 caracteres.
-- Não é permitido cadastrar duas Barracas com o mesmo nome.
-- Toda Barraca deve estar associada a um TipoBarraca válido (existente no cadastro).
-
-## Padrões GRASP Aplicados
-
-| Padrão GRASP | Onde foi aplicado | Como foi aplicado |
-|---|---|---|
-| **Information Expert** | `Barraca.java`, `TipoBarraca.java` | Método `validar()` em cada entidade — quem tem os dados valida seus próprios dados |
-| **Controller** | `BarracaController.java` | Recebe a entrada do terminal e delega para os services, sem lógica de negócio |
-| **Creator** | `Main.java`, `BarracaService`, `TipoBarracaService` | `Main` instancia repositórios e services; services instanciam as entidades |
-| **Low Coupling** | `BarracaService`, `TipoBarracaService` | Dependem das interfaces `BarracaRepository` e `TipoBarracaRepository`, não das implementações JSON |
-| **High Cohesion** | Todas as classes | Cada classe tem uma única responsabilidade bem definida |
-| **Pure Fabrication** | `BarracaRepositoryJson`, `TipoBarracaRepositoryJson` | Classes criadas apenas para persistência JSON, sem existir no domínio real da feira |
-| **Protected Variations / Indirection** | Interfaces `Repository` | Mudanças na persistência (ex: trocar JSON por outro formato) não afetam services ou domínio |
-
-## Tecnologias
-
-- **Java puro** (JDK 8+)
-- **Menu textual** no terminal (console)
-- **Persistência** em arquivo JSON local (pasta `data/`)
-- **Sem frameworks externos**, sem banco de dados, sem Spring Boot

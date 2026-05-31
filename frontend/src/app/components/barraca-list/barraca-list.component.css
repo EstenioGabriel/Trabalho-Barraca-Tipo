@@ -42,6 +42,44 @@ th {
   background-color: #f4f4f4;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.btn-nova {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.btn-nova:hover {
+  background-color: #218838;
+}
+
+.acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
 .btn-delete {
   background-color: #dc3545;
   color: white;

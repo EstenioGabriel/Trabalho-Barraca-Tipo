@@ -1,0 +1,47 @@
+<div class="container">
+  <h2>{{ modoEdicao ? 'Editar Barraca' : 'Nova Barraca' }}</h2>
+
+  <div *ngIf="mensagemErro" class="alert alert-error">{{ mensagemErro }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+
+    <div class="form-group">
+      <label for="nome">Nome *</label>
+      <input id="nome" formControlName="nome" type="text" class="form-control" />
+      <span class="error" *ngIf="nome?.touched && nome?.errors?.['required']">Nome é obrigatório.</span>
+      <span class="error" *ngIf="nome?.touched && nome?.errors?.['minlength']">Nome deve ter ao menos 3 caracteres.</span>
+    </div>
+
+    <div class="form-group">
+      <label for="descricao">Descrição</label>
+      <input id="descricao" formControlName="descricao" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="localizacao">Localização</label>
+      <input id="localizacao" formControlName="localizacao" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="tipoBarracaId">Tipo de Barraca *</label>
+      <select id="tipoBarracaId" formControlName="tipoBarracaId" class="form-control">
+        <option value="">Selecione um tipo...</option>
+        <option *ngFor="let tipo of tiposBarraca" [value]="tipo.id">{{ tipo.nome }}</option>
+      </select>
+      <span class="error" *ngIf="tipoBarracaId?.touched && tipoBarracaId?.errors?.['required']">
+        Tipo de barraca é obrigatório.
+      </span>
+    </div>
+
+    <div class="form-group form-check">
+      <input id="ativo" formControlName="ativo" type="checkbox" />
+      <label for="ativo">Ativa</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="form.invalid" class="btn btn-save">Salvar</button>
+      <button type="button" routerLink="/barracas" class="btn btn-cancel">Cancelar</button>
+    </div>
+
+  </form>
+</div>
