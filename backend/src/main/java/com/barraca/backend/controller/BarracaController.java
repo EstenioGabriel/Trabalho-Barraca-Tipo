@@ -3,6 +3,7 @@ package com.barraca.backend.controller;
 import com.barraca.backend.dto.BarracaRequestDTO;
 import com.barraca.backend.dto.BarracaResponseDTO;
 import com.barraca.backend.service.BarracaService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +32,13 @@ public class BarracaController {
     }
 
     @PostMapping
-    public ResponseEntity<BarracaResponseDTO> cadastrar(@RequestBody BarracaRequestDTO request) {
+    public ResponseEntity<BarracaResponseDTO> cadastrar(@Valid @RequestBody BarracaRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BarracaResponseDTO> atualizar(@PathVariable Long id,
-                                                         @RequestBody BarracaRequestDTO request) {
+                                                         @Valid @RequestBody BarracaRequestDTO request) {
         return ResponseEntity.ok(service.atualizar(id, request));
     }
 

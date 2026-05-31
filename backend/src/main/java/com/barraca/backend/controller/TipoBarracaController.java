@@ -2,6 +2,7 @@ package com.barraca.backend.controller;
 
 import com.barraca.backend.dto.TipoBarracaDTO;
 import com.barraca.backend.service.TipoBarracaService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class TipoBarracaController {
     }
 
     @PostMapping
-    public ResponseEntity<TipoBarracaDTO> cadastrar(@RequestBody TipoBarracaDTO request) {
+    public ResponseEntity<TipoBarracaDTO> cadastrar(@Valid @RequestBody TipoBarracaDTO request) {
         TipoBarracaDTO response = service.criar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

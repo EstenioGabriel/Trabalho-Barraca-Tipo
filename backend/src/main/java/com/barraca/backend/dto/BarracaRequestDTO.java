@@ -1,10 +1,22 @@
 package com.barraca.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class BarracaRequestDTO {
+
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(min = 3, message = "O nome deve ter ao menos 3 caracteres")
     private String nome;
+
     private String descricao;
+
     private String localizacao;
+
     private boolean ativo;
+
+    @NotNull(message = "O tipo de barraca é obrigatório")
     private Long tipoBarracaId;
 
     public BarracaRequestDTO() {}
