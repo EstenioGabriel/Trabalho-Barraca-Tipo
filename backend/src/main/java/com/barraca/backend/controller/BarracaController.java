@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/barracas")
-@CrossOrigin(origins = "*")
 public class BarracaController {
 
     private final BarracaService service;

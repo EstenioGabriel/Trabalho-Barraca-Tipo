@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tipos-barraca")
-@CrossOrigin(origins = "*")
 public class TipoBarracaController {
 
     private final TipoBarracaService service;
