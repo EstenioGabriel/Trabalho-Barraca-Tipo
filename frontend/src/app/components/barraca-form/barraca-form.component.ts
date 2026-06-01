@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -25,6 +25,7 @@ export class BarracaFormComponent implements OnInit {
   private tipoService = inject(TipoBarracaService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -36,8 +37,14 @@ export class BarracaFormComponent implements OnInit {
     });
 
     this.tipoService.listar().subscribe({
-      next: (dados) => this.tiposBarraca = dados,
-      error: () => this.mensagemErro = 'Não foi possível carregar os tipos de barraca.'
+      next: (dados) => {
+        this.tiposBarraca = dados;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.mensagemErro = 'Não foi possível carregar os tipos de barraca.';
+        this.cdr.markForCheck();
+      }
     });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -53,8 +60,12 @@ export class BarracaFormComponent implements OnInit {
             ativo: dados.ativo,
             tipoBarracaId: dados.tipoBarracaId
           });
+          this.cdr.markForCheck();
         },
-        error: () => this.mensagemErro = 'Não foi possível carregar os dados da barraca.'
+        error: () => {
+          this.mensagemErro = 'Não foi possível carregar os dados da barraca.';
+          this.cdr.markForCheck();
+        }
       });
     }
   }
@@ -67,12 +78,18 @@ export class BarracaFormComponent implements OnInit {
     if (this.modoEdicao && this.idEdicao) {
       this.barracaService.atualizar(this.idEdicao, dados).subscribe({
         next: () => this.router.navigate(['/barracas']),
-        error: (err) => this.mensagemErro = err.error?.mensagem || 'Erro ao atualizar a barraca.'
+        error: (err) => {
+          this.mensagemErro = err.error?.mensagem || 'Erro ao atualizar a barraca.';
+          this.cdr.markForCheck();
+        }
       });
     } else {
       this.barracaService.cadastrar(dados).subscribe({
         next: () => this.router.navigate(['/barracas']),
-        error: (err) => this.mensagemErro = err.error?.mensagem || 'Erro ao cadastrar a barraca.'
+        error: (err) => {
+          this.mensagemErro = err.error?.mensagem || 'Erro ao cadastrar a barraca.';
+          this.cdr.markForCheck();
+        }
       });
     }
   }

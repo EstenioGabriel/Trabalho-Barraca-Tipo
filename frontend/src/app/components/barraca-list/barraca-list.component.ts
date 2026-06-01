@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { BarracaService } from '../../services/barraca.service';
@@ -17,6 +17,7 @@ export class BarracaListComponent implements OnInit {
   mensagemErro = '';
 
   private barracaService = inject(BarracaService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.carregarBarracas();
@@ -24,8 +25,14 @@ export class BarracaListComponent implements OnInit {
 
   carregarBarracas(): void {
     this.barracaService.listar().subscribe({
-      next: (dados) => this.barracas = dados,
-      error: (err) => this.mensagemErro = 'Não foi possível carregar a lista de barracas.'
+      next: (dados) => {
+        this.barracas = dados;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.mensagemErro = 'Não foi possível carregar a lista de barracas.';
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -35,11 +42,19 @@ export class BarracaListComponent implements OnInit {
         next: () => {
           this.mensagemSucesso = 'Barraca removida com sucesso!';
           this.carregarBarracas();
-          setTimeout(() => this.mensagemSucesso = '', 3000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.mensagemSucesso = '';
+            this.cdr.markForCheck();
+          }, 3000);
         },
         error: (err) => {
           this.mensagemErro = err.error?.message || 'Falha ao excluir a barraca.';
-          setTimeout(() => this.mensagemErro = '', 4000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.mensagemErro = '';
+            this.cdr.markForCheck();
+          }, 4000);
         }
       });
     }
