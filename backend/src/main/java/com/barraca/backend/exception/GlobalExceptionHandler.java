@@ -35,6 +35,6 @@ public class GlobalExceptionHandler {
         resposta.put("status", 422);
         resposta.put("mensagem", ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(resposta);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(resposta);
     }
 }
